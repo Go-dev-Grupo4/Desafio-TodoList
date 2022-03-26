@@ -58,7 +58,7 @@
 		51DB7DEC27EF46B90021A802 /* TODOLIST_GRUPO4 */ = {
 			isa = PBXGroup;
 			children = (
-				51DB7E0727EF70100021A802 /* Model */,
+				51DB7E0827EFC8940021A802 /* Model */,
 				51DB7E0427EF67590021A802 /* CustomTableviewCell */,
 				51DB7DED27EF46B90021A802 /* AppDelegate.swift */,
 				51DB7DEF27EF46B90021A802 /* SceneDelegate.swift */,
@@ -79,7 +79,7 @@
 			path = CustomTableviewCell;
 			sourceTree = "<group>";
 		};
-		51DB7E0727EF70100021A802 /* Model */ = {
+		51DB7E0827EFC8940021A802 /* Model */ = {
 			isa = PBXGroup;
 			children = (
 			);
