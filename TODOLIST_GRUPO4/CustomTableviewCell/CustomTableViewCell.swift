@@ -13,7 +13,6 @@ class CustomTableViewCell: UITableViewCell {
     
     lazy var toDoImage: UIImageView = {
         let image = UIImageView(image: UIImage(systemName: "checkmark.circle"))
-        
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
@@ -41,7 +40,7 @@ class CustomTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA BLA "
+        label.text = "Descrição"
         label.numberOfLines = 0
         label.textAlignment = .justified
         return label
@@ -50,10 +49,23 @@ class CustomTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        backgroundColor = .lightGray
+        backgroundColor = .systemBackground
         accessoryType = .disclosureIndicator
         
         configUI()
+    }
+    
+    func setup(task: Task) {
+        toDoTitleLabel.text = task.title
+        toDoDescriptionLabel.text = task.description
+        
+        if task.completed {
+            toDoImage.image = UIImage(systemName: "checkmark.circle.fill")
+            toDoImage.tintColor = .systemGreen
+        } else {
+            toDoImage.image = UIImage(systemName: "checkmark.circle")
+            toDoImage.tintColor = .darkGray
+        }
     }
     
     private func configUI() {

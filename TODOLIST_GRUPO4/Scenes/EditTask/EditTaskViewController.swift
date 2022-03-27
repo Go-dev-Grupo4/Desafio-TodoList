@@ -12,6 +12,7 @@ class EditTaskViewController: UIViewController {
     
     var safeArea: UILayoutGuide!
     
+    var delegate: ViewActionsDelegate?
     var task: Task?
     
     // MARK: Layout vars
@@ -75,15 +76,20 @@ class EditTaskViewController: UIViewController {
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 10
         return stack
     }()
     
     lazy var doneButton: UIButton = {
         let button = UIButton()
         button.setTitle("Confirmar", for: .normal)
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.label.cgColor
         button.setTitleColor(UIColor.systemBlue, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(confirmTaskCreation), for: .touchUpInside)
+        button.setTitleColor(UIColor.label, for: .normal)
+        button.layer.cornerRadius = 8
         return button
     }()
     
@@ -92,9 +98,9 @@ class EditTaskViewController: UIViewController {
         button.tintColor = .white
         button.backgroundColor = .red
         button.layer.cornerRadius = 8
-        button.setTitle("Cancelar", for: .normal)
+        button.setTitle("Deletar", for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.addTarget(self, action: #selector(closeModal), for: .touchUpInside)
+        button.addTarget(self, action: #selector(deleteTask), for: .touchUpInside)
         return button
     }()
     
@@ -193,24 +199,26 @@ class EditTaskViewController: UIViewController {
     // MARK: - Buttons actions
 
     @objc func closeModal() {
+        delegate?.completeAction(actionType: .dismiss)
         dismiss(animated: true)
+    }
+    
+    @objc func deleteTask() {
+        if let id = task?.id.uuidString {
+            ManagedObjectContext.shared.delete(uuid: id) { _ in
+                delegate?.completeAction(actionType: .delete)
+            }
+        }
     }
     
     @objc func confirmTaskCreation() {
         // Função de salvar Task
-        
-        dismiss(animated: true)
+        let savedTask = Task(id: task?.id ?? UUID(), title: titleTextField.text ?? "", description: taskDescriptionTextView.text, completed: true)
+        ManagedObjectContext.shared.update(task: savedTask) { _ in
+            delegate?.setNewTask(savedTask)
+            delegate?.completeAction(actionType: .save)
+        }
+        navigationController?.popViewController(animated: true)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 
 }

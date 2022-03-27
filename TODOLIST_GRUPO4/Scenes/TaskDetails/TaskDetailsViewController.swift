@@ -7,11 +7,33 @@
 
 import UIKit
 
+enum ViewActions {
+    case save
+    case dismiss
+    case delete
+}
+
+protocol ViewActionsDelegate {
+    func completeAction(actionType: ViewActions) -> Void
+    func setNewTask(_ task: Task) -> Void
+}
+
 class TaskDetailsViewController: UIViewController {
     
     var safeArea: UILayoutGuide!
-
-    var task: Task? = nil
+    
+    var delegate: TasksDataManagerDelegate?
+    var task: Task? = nil {
+        didSet {
+            if let task = task {
+                taskTitleLabel.text = task.title
+                taskDescriptionTextView.text = task.description
+                if task.completed {
+                    doneButton.isHidden = true
+                }
+            }
+        }
+    }
         
     // MARK: Layout vars
     
@@ -41,12 +63,12 @@ class TaskDetailsViewController: UIViewController {
         return label
     }()
     
-    lazy var taskTitleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Título da Task"
-        label.font = .systemFont(ofSize: 14, weight: .regular)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    lazy var taskTitleLabel: UITextField = {
+        let textField = UITextField()
+        textField.text = "Título da Task"
+        textField.font = .systemFont(ofSize: 14, weight: .regular)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
     }()
     
     lazy var descriptionLabel: UILabel = {
@@ -64,8 +86,22 @@ class TaskDetailsViewController: UIViewController {
         textView.autocorrectionType = .default
         textView.isEditable = false
         textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.keyboardType = .default
         textView.text = "Descrição da task"
         return textView
+    }()
+    
+    lazy var doneButton: UIButton = {
+        let button = UIButton()
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.label.cgColor
+        button.setTitle("Marcar como concluída", for: .normal)
+        button.layer.cornerRadius = 8
+        button.setTitleColor(UIColor.systemBlue, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(completeTask), for: .touchUpInside)
+        button.setTitleColor(UIColor.label, for: .normal)
+        return button
     }()
 
     // MARK: Life Cycle
@@ -75,11 +111,6 @@ class TaskDetailsViewController: UIViewController {
 
         safeArea = view.layoutMarginsGuide
         configUI()
-        
-        if let task = task {
-            taskTitleLabel.text = task.title
-            taskDescriptionTextView.text = task.description
-        }
     }
     
     // MARK: UI Configurations
@@ -92,8 +123,12 @@ class TaskDetailsViewController: UIViewController {
         view.addSubview(taskDetailsTitleLabel)
         configTaskDetailsTitleLabel()
         
+        view.addSubview(doneButton)
+        configDoneButton()
+        
         view.addSubview(stackView)
         configStackView()
+        
     }
     
     private func configTaskDetailsTitleLabel() {
@@ -110,7 +145,7 @@ class TaskDetailsViewController: UIViewController {
             stackView.topAnchor.constraint(equalTo: taskDetailsTitleLabel.bottomAnchor, constant: 15),
             stackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 5),
             stackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -5),
-            stackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -15)
+            stackView.bottomAnchor.constraint(equalTo: doneButton.topAnchor, constant: -15)
         ])
         
         stackView.addArrangedSubview(titleLabel)
@@ -141,6 +176,15 @@ class TaskDetailsViewController: UIViewController {
         ])
     }
     
+    private func configDoneButton() {
+        NSLayoutConstraint.activate([
+            doneButton.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: -15),
+            doneButton.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 15),
+            doneButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -15),
+            doneButton.heightAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
     private func configTaskDescriptionTextView() {
         NSLayoutConstraint.activate([
             taskDescriptionTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 150)
@@ -150,19 +194,43 @@ class TaskDetailsViewController: UIViewController {
     @objc private func editTask() {
         let editTaskViewController = EditTaskViewController()
         editTaskViewController.task = task
+        editTaskViewController.delegate = self
         
-        self.present(editTaskViewController, animated: true)
+        if let _ = navigationController {
+            navigationController?.pushViewController(editTaskViewController, animated: true)
+        } else {
+            present(editTaskViewController, animated: true)
+        }
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @objc private func completeTask() {
+        if var saveTask = task {
+            saveTask.completed = true
+            ManagedObjectContext.shared.update(task: saveTask) { _ in
+                delegate?.loadData()
+                navigationController?.popViewController(animated: true)
+            }
+        }
     }
-    */
+}
+
+extension TaskDetailsViewController: ViewActionsDelegate {
+    func setNewTask(_ task: Task) {
+        self.task = task
+    }
+    
+    func completeAction(actionType: ViewActions) {
+        switch actionType {
+        case .delete:
+            delegate?.loadData()
+            navigationController?.popViewController(animated: true)
+            navigationController?.popViewController(animated: true)
+        case .save:
+            delegate?.loadData()
+        case .dismiss:
+            break
+        }
+    }
+    
 
 }

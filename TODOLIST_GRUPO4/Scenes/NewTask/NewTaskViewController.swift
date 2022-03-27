@@ -11,6 +11,8 @@ class NewTaskViewController: UIViewController {
     
     var safeArea: UILayoutGuide!
     
+    var delegate: TasksDataManagerDelegate?
+    
     // MARK: Layout vars
     
     lazy var createNewTaskTitleLabel: UILabel = {
@@ -46,6 +48,7 @@ class NewTaskViewController: UIViewController {
         textField.autocapitalizationType = .sentences
         textField.autocorrectionType = .default
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.keyboardType = .default
         return textField
     }()
     
@@ -64,6 +67,7 @@ class NewTaskViewController: UIViewController {
         textView.autocorrectionType = .default
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.text = "Descrição"
+        textView.keyboardType = .default
         return textView
     }()
 
@@ -72,15 +76,20 @@ class NewTaskViewController: UIViewController {
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 10
         return stack
     }()
     
     lazy var doneButton: UIButton = {
         let button = UIButton()
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.label.cgColor
         button.setTitle("Confirmar", for: .normal)
+        button.layer.cornerRadius = 8
         button.setTitleColor(UIColor.systemBlue, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(confirmTaskCreation), for: .touchUpInside)
+        button.setTitleColor(UIColor.label, for: .normal)
         return button
     }()
     
@@ -189,20 +198,13 @@ class NewTaskViewController: UIViewController {
     }
     
     @objc func confirmTaskCreation() {
-        // Função de salvar Task
+        let task = Task(id: UUID(), title: titleTextField.text ?? "", description: descriptionTextView.text, completed: false)
+        ManagedObjectContext.shared.save(task: task) { _ in
+            delegate?.loadData()
+        }
         
         dismiss(animated: true)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
 

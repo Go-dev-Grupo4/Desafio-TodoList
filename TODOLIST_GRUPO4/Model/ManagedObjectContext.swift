@@ -26,9 +26,13 @@ protocol managedDeleteProtocol {
 class ManagedObjectContext: managedProtocol, managedSaveProtocol, managedDeleteProtocol {
     
     private let entity = "Tasks"
+    
+    static let shared: ManagedObjectContext = {
+        let instance = ManagedObjectContext()
+        return instance
+    }()
 
     func getContext() -> NSManagedObjectContext {
-        
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         return appDelegate.persistentContainer.viewContext
         
@@ -65,6 +69,7 @@ class ManagedObjectContext: managedProtocol, managedSaveProtocol, managedDeleteP
     func save(task: Task, onCompletionHandler: (String) -> Void) {
         
         let context = getContext()
+        
         guard let entity = NSEntityDescription.entity(forEntityName: entity, in: context) else { return }
         let transaction = NSManagedObject(entity: entity, insertInto: context)
         
@@ -80,7 +85,29 @@ class ManagedObjectContext: managedProtocol, managedSaveProtocol, managedDeleteP
         } catch let error as NSError {
             print("Could not save \(error.localizedDescription)")
         }
-  
+    }
+    
+    func update(task: Task, onCompletionHandler: (String) -> Void) {
+        let context = getContext()
+        
+        let predicate = NSPredicate(format: "id == %@","\(task.id.uuidString)")
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult>=NSFetchRequest(entityName: entity)
+        fetchRequest.predicate = predicate
+        
+        do {
+            let fetchResult = try context.fetch(fetchRequest) as! [NSManagedObject]
+            
+            if let entityExists = fetchResult.first {
+                entityExists.setValue(task.title, forKey: "title")
+                entityExists.setValue(task.description, forKey: "descript")
+                entityExists.setValue(task.completed, forKey: "completed")
+                try context.save()
+                onCompletionHandler("Save Success")
+            }
+            
+        } catch let error as NSError {
+            print("Could not save \(error.localizedDescription)")
+        }
     }
 
     func delete(uuid: String, onCompletionHandler: (String) -> Void) {

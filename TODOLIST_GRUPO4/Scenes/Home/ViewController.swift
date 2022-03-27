@@ -6,6 +6,11 @@
 //
 
 import UIKit
+import CoreData
+
+protocol TasksDataManagerDelegate {
+    func loadData() -> Void
+}
 
 class ViewController: UIViewController {
 
@@ -30,7 +35,6 @@ class ViewController: UIViewController {
         var appearence = UINavigationBarAppearance()
         
         appearence.shadowColor = .clear
-        appearence.backgroundColor = .systemBackground
         appearence.titleTextAttributes = [.foregroundColor: UIColor.label]
         appearence.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
         
@@ -56,7 +60,7 @@ class ViewController: UIViewController {
     
     private func configUI() {
 
-        view.backgroundColor = .purple
+        view.backgroundColor = .systemBackground
         title = "TO DOs"
         
         let addButton = UIBarButtonItem(image: UIImage.init(systemName: "plus.square.on.square"), style: .plain, target: self, action: #selector(callNewTaskView))
@@ -81,26 +85,21 @@ class ViewController: UIViewController {
     }
     
     private func delegates() {
-    
         toDosTableView.delegate = self
         toDosTableView.dataSource = self
-        
     }
     
-
-    private func loadData() {
-        tasks = Task.getData()
-    }
     
     @objc private func callNewTaskView() {
         let newTaskViewController = NewTaskViewController()
-        
+        newTaskViewController.delegate = self
         navigationController?.present(newTaskViewController, animated: true)
     }
 
     private func configNavigationBar() {
+        
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.tintColor = .blue
+        navigationController?.navigationBar.tintColor = .label
         navigationController?.navigationBar.standardAppearance = appearence
         navigationController?.navigationBar.compactAppearance = appearence
         navigationController?.navigationBar.scrollEdgeAppearance = appearence
@@ -109,11 +108,19 @@ class ViewController: UIViewController {
     
 }
 
+extension ViewController: TasksDataManagerDelegate {
+    
+    func loadData() {
+        tasks = ManagedObjectContext.shared.getTasks()
+    }
+}
+
 extension ViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let task = tasks[indexPath.row]
         let detailsVC = TaskDetailsViewController()
+        detailsVC.delegate = self
         detailsVC.task = task
         
         if let _ = navigationController {
@@ -133,7 +140,8 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? CustomTableViewCell else { return UITableViewCell() }
-        
+        let task = tasks[indexPath.row]
+        cell.setup(task: task)
         return cell
         
     }
