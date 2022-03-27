@@ -26,6 +26,23 @@ class ViewController: UIViewController {
         return tableView
     }()
     
+    lazy var appearence: UINavigationBarAppearance! = {
+        var appearence = UINavigationBarAppearance()
+        
+        appearence.shadowColor = .clear
+        appearence.backgroundColor = .systemBackground
+        appearence.titleTextAttributes = [.foregroundColor: UIColor.label]
+        appearence.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+        
+        return appearence
+    }()
+    
+    lazy var addButton: UIBarButtonItem! = {
+        let button = UIBarButtonItem(image: UIImage.init(systemName: "plus.circle"), style: .plain, target: self, action: #selector(callNewTaskView))
+        
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -45,6 +62,7 @@ class ViewController: UIViewController {
         let addButton = UIBarButtonItem(image: UIImage.init(systemName: "plus.square.on.square"), style: .plain, target: self, action: #selector(callNewTaskView))
         navigationItem.rightBarButtonItems = [addButton]
 
+        configNavigationBar()
         configTableView()
 
     }
@@ -69,6 +87,7 @@ class ViewController: UIViewController {
         
     }
     
+
     private func loadData() {
         tasks = Task.getData()
     }
@@ -78,6 +97,16 @@ class ViewController: UIViewController {
         
         navigationController?.present(newTaskViewController, animated: true)
     }
+
+    private func configNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.tintColor = .blue
+        navigationController?.navigationBar.standardAppearance = appearence
+        navigationController?.navigationBar.compactAppearance = appearence
+        navigationController?.navigationBar.scrollEdgeAppearance = appearence
+        navigationItem.rightBarButtonItem = addButton
+    }
+    
 }
 
 extension ViewController: UITableViewDelegate {
