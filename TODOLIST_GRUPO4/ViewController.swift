@@ -30,7 +30,7 @@ class ViewController: UIViewController {
     }()
     
     lazy var addButton: UIBarButtonItem! = {
-        let button = UIBarButtonItem(image: UIImage.init(systemName: "plus.circle"), style: .plain, target: self, action: #selector(callNewToDo))
+        let button = UIBarButtonItem(image: UIImage.init(systemName: "plus.circle"), style: .plain, target: self, action: #selector(callNewTaskView))
         
         return button
     }()
@@ -85,9 +85,6 @@ class ViewController: UIViewController {
         navigationItem.rightBarButtonItem = addButton
     }
     
-    @objc private func callNewToDo() {
-        
-    }
 }
 
 extension ViewController: UITableViewDelegate {
