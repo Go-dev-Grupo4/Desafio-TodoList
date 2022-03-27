@@ -14,8 +14,10 @@
 		51DB7DFA27EF46BA0021A802 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51DB7DF927EF46BA0021A802 /* Assets.xcassets */; };
 		51DB7DFD27EF46BA0021A802 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 51DB7DFB27EF46BA0021A802 /* LaunchScreen.storyboard */; };
 		51DB7E0627EF67A60021A802 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB7E0527EF67A60021A802 /* CustomTableViewCell.swift */; };
+
 		51DB7E0B27EFE2020021A802 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51DB7E0A27EFE2020021A802 /* CoreData.framework */; };
 		51DB7E0D27EFE6E30021A802 /* ManagedObjectContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DB7E0C27EFE6E30021A802 /* ManagedObjectContext.swift */; };
+
 		F847E11E27EFCEBD00C48C36 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = F847E11D27EFCEBD00C48C36 /* Task.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +33,7 @@
 		51DB7E0527EF67A60021A802 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
 		51DB7E0A27EFE2020021A802 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		51DB7E0C27EFE6E30021A802 /* ManagedObjectContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjectContext.swift; sourceTree = "<group>"; };
+
 		F847E11D27EFCEBD00C48C36 /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -66,6 +69,7 @@
 		51DB7DEC27EF46B90021A802 /* TODOLIST_GRUPO4 */ = {
 			isa = PBXGroup;
 			children = (
+				F826DF4B27F086C400ACEE93 /* Scenes */,
 				51DB7E0827EFC8940021A802 /* Model */,
 				51DB7E0427EF67590021A802 /* CustomTableviewCell */,
 				51DB7DED27EF46B90021A802 /* AppDelegate.swift */,
@@ -96,12 +100,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+
 		51DB7E0927EFE2020021A802 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				51DB7E0A27EFE2020021A802 /* CoreData.framework */,
 			);
 			name = Frameworks;
+
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -175,6 +181,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				51DB7DF227EF46B90021A802 /* ViewController.swift in Sources */,
+				F82A4EE827F0DEFD003EC1B6 /* EditTaskViewController.swift in Sources */,
+				F826DF4E27F086EE00ACEE93 /* NewTaskViewController.swift in Sources */,
+				F826DF5127F0870300ACEE93 /* TaskDetailsViewController.swift in Sources */,
 				51DB7E0627EF67A60021A802 /* CustomTableViewCell.swift in Sources */,
 				51DB7DEE27EF46B90021A802 /* AppDelegate.swift in Sources */,
 				51DB7DF827EF46B90021A802 /* TODOLIST_GRUPO4.xcdatamodeld in Sources */,

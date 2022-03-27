@@ -11,11 +11,36 @@ class ViewController: UIViewController {
 
     var safeArea: UILayoutGuide!
     
+    var tasks: [Task] = [] {
+        didSet {
+            DispatchQueue.main.async {
+                self.toDosTableView.reloadData()
+            }
+        }
+    }
+    
     lazy var toDosTableView: UITableView! = {
         let tableView = UITableView(frame: .zero, style: .plain)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
+    }()
+    
+    lazy var appearence: UINavigationBarAppearance! = {
+        var appearence = UINavigationBarAppearance()
+        
+        appearence.shadowColor = .clear
+        appearence.backgroundColor = .systemBackground
+        appearence.titleTextAttributes = [.foregroundColor: UIColor.label]
+        appearence.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+        
+        return appearence
+    }()
+    
+    lazy var addButton: UIBarButtonItem! = {
+        let button = UIBarButtonItem(image: UIImage.init(systemName: "plus.circle"), style: .plain, target: self, action: #selector(callNewTaskView))
+        
+        return button
     }()
     
     override func viewDidLoad() {
@@ -26,14 +51,18 @@ class ViewController: UIViewController {
         
         configUI()
         delegates()
-        
+        loadData()
     }
     
     private func configUI() {
 
         view.backgroundColor = .purple
         title = "TO DOs"
+        
+        let addButton = UIBarButtonItem(image: UIImage.init(systemName: "plus.square.on.square"), style: .plain, target: self, action: #selector(callNewTaskView))
+        navigationItem.rightBarButtonItems = [addButton]
 
+        configNavigationBar()
         configTableView()
 
     }
@@ -57,15 +86,48 @@ class ViewController: UIViewController {
         toDosTableView.dataSource = self
         
     }
+    
+
+    private func loadData() {
+        tasks = Task.getData()
+    }
+    
+    @objc private func callNewTaskView() {
+        let newTaskViewController = NewTaskViewController()
+        
+        navigationController?.present(newTaskViewController, animated: true)
+    }
+
+    private func configNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.tintColor = .blue
+        navigationController?.navigationBar.standardAppearance = appearence
+        navigationController?.navigationBar.compactAppearance = appearence
+        navigationController?.navigationBar.scrollEdgeAppearance = appearence
+        navigationItem.rightBarButtonItem = addButton
+    }
+    
 }
 
 extension ViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let task = tasks[indexPath.row]
+        let detailsVC = TaskDetailsViewController()
+        detailsVC.task = task
+        
+        if let _ = navigationController {
+            navigationController?.pushViewController(detailsVC, animated: true)
+        } else {
+            present(detailsVC, animated: true)
+        }
+    }
     
 }
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
