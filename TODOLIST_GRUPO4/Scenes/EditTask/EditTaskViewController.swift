@@ -1,5 +1,5 @@
 //
-//  NewTaskViewController.swift
+//  EditTaskViewController.swift
 //  TODOLIST_GRUPO4
 //
 //  Created by Matheus Lenke on 27/03/22.
@@ -7,15 +7,18 @@
 
 import UIKit
 
-class NewTaskViewController: UIViewController {
+class EditTaskViewController: UIViewController {
+
     
     var safeArea: UILayoutGuide!
+    
+    var task: Task?
     
     // MARK: Layout vars
     
     lazy var createNewTaskTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Criar nova tarefa"
+        label.text = "Editar tarefa"
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 18, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -57,7 +60,7 @@ class NewTaskViewController: UIViewController {
         return label
     }()
     
-    lazy var descriptionTextView: UITextView = {
+    lazy var taskDescriptionTextView: UITextView = {
         let textView = UITextView()
         textView.font = .systemFont(ofSize: 14, weight: .regular)
         textView.autocapitalizationType = .sentences
@@ -102,6 +105,11 @@ class NewTaskViewController: UIViewController {
 
         safeArea = view.layoutMarginsGuide
         configUI()
+        
+        if let task = task {
+            titleTextField.text = task.title
+            taskDescriptionTextView.text = task.description
+        }
     }
     
     // MARK: UI Configurations
@@ -139,7 +147,7 @@ class NewTaskViewController: UIViewController {
         stackView.addArrangedSubview(taskTitleLabel)
         stackView.addArrangedSubview(titleTextField)
         stackView.addArrangedSubview(taskDescriptionLabel)
-        stackView.addArrangedSubview(descriptionTextView)
+        stackView.addArrangedSubview(taskDescriptionTextView)
         configTaskTitleLabel()
         configTitleTextField()
         configTaskDescriptionLabel()
@@ -166,7 +174,7 @@ class NewTaskViewController: UIViewController {
     
     private func configDescriptionTextView() {
         NSLayoutConstraint.activate([
-            descriptionTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 150)
+            taskDescriptionTextView.heightAnchor.constraint(greaterThanOrEqualToConstant: 150)
         ])
     }
     
@@ -204,13 +212,5 @@ class NewTaskViewController: UIViewController {
     }
     */
 
-}
 
-extension NewTaskViewController: UITextViewDelegate {
-    func textViewDidBeginEditing(_ textView: UITextView) {
-//        if textView.textColor == UIColor.lightGray {
-//             textView.text = nil
-//             textView.textColor = UIColor.black
-//         }
-    }
 }

@@ -82,6 +82,18 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let task = tasks[indexPath.row]
+        let detailsVC = TaskDetailsViewController()
+        detailsVC.task = task
+        
+        if let _ = navigationController {
+            navigationController?.pushViewController(detailsVC, animated: true)
+        } else {
+            present(detailsVC, animated: true)
+        }
+    }
+    
 }
 
 extension ViewController: UITableViewDataSource {
