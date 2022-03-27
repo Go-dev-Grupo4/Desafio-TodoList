@@ -11,6 +11,14 @@ class ViewController: UIViewController {
 
     var safeArea: UILayoutGuide!
     
+    var tasks: [Task] = [] {
+        didSet {
+            DispatchQueue.main.async {
+                self.toDosTableView.reloadData()
+            }
+        }
+    }
+    
     lazy var toDosTableView: UITableView! = {
         let tableView = UITableView(frame: .zero, style: .plain)
         
@@ -43,13 +51,16 @@ class ViewController: UIViewController {
         
         configUI()
         delegates()
-        
+        loadData()
     }
     
     private func configUI() {
 
         view.backgroundColor = .purple
         title = "TO DOs"
+        
+        let addButton = UIBarButtonItem(image: UIImage.init(systemName: "plus.square.on.square"), style: .plain, target: self, action: #selector(callNewTaskView))
+        navigationItem.rightBarButtonItems = [addButton]
 
         configNavigationBar()
         configTableView()
@@ -76,6 +87,17 @@ class ViewController: UIViewController {
         
     }
     
+
+    private func loadData() {
+        tasks = Task.getData()
+    }
+    
+    @objc private func callNewTaskView() {
+        let newTaskViewController = NewTaskViewController()
+        
+        navigationController?.present(newTaskViewController, animated: true)
+    }
+
     private func configNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.tintColor = .blue
@@ -89,11 +111,23 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate {
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let task = tasks[indexPath.row]
+        let detailsVC = TaskDetailsViewController()
+        detailsVC.task = task
+        
+        if let _ = navigationController {
+            navigationController?.pushViewController(detailsVC, animated: true)
+        } else {
+            present(detailsVC, animated: true)
+        }
+    }
+    
 }
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
