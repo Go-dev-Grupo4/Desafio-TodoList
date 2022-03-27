@@ -18,6 +18,23 @@ class ViewController: UIViewController {
         return tableView
     }()
     
+    lazy var appearence: UINavigationBarAppearance! = {
+        var appearence = UINavigationBarAppearance()
+        
+        appearence.shadowColor = .clear
+        appearence.backgroundColor = .systemBackground
+        appearence.titleTextAttributes = [.foregroundColor: UIColor.label]
+        appearence.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+        
+        return appearence
+    }()
+    
+    lazy var addButton: UIBarButtonItem! = {
+        let button = UIBarButtonItem(image: UIImage.init(systemName: "plus.circle"), style: .plain, target: self, action: #selector(callNewToDo))
+        
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -34,6 +51,7 @@ class ViewController: UIViewController {
         view.backgroundColor = .purple
         title = "TO DOs"
 
+        configNavigationBar()
         configTableView()
 
     }
@@ -55,6 +73,19 @@ class ViewController: UIViewController {
     
         toDosTableView.delegate = self
         toDosTableView.dataSource = self
+        
+    }
+    
+    private func configNavigationBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.tintColor = .blue
+        navigationController?.navigationBar.standardAppearance = appearence
+        navigationController?.navigationBar.compactAppearance = appearence
+        navigationController?.navigationBar.scrollEdgeAppearance = appearence
+        navigationItem.rightBarButtonItem = addButton
+    }
+    
+    @objc private func callNewToDo() {
         
     }
 }
